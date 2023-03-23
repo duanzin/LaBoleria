@@ -18,17 +18,18 @@ export async function postOrder(order) {
 
 export async function getAllOrders() {
   return db.query(
-    `SELECT clients AS client, cakes AS cake, orders.id AS "orderId", "createdAt", quantity, "totalPrice" 
+    `SELECT json_agg(clients) AS client, json_agg(cakes) AS cake, orders.id AS "orderId", "createdAt", quantity, "totalPrice" 
     FROM orders JOIN clients ON orders."clientId" = clients.id 
-    JOIN cakes ON orders."cakeId" = cakes.id`
+    JOIN cakes ON orders."cakeId" = cakes.id GROUP BY orders.id`
   );
 }
 
 export async function getOrder(id) {
   return db.query(
-    `SELECT clients AS client, cakes AS cake, orders.id AS "orderId", "createdAt", quantity, "totalPrice" 
+    `SELECT json_agg(clients) AS client, json_agg(cakes) AS cake, orders.id AS "orderId", "createdAt", quantity, "totalPrice" 
     FROM orders JOIN clients ON orders."clientId" = clients.id 
-    JOIN cakes ON orders."cakeId" = cakes.id WHERE orders.id = $1;`,
+    JOIN cakes ON orders."cakeId" = cakes.id WHERE orders.id = $1 
+    GROUP BY orders.id;`,
     [id]
   );
 }
