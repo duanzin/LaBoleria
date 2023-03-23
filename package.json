@@ -1,0 +1,19 @@
+{
+  "name": "projeto-la_boleria",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "type": "module",
+  "scripts": {
+    "start": "node ./src/app.js",
+    "dev": "nodemon ./src/app.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "joi": "^17.9.0",
+    "nodemon": "^2.0.21",
+    "pg": "^8.10.0"
+  }
+}
