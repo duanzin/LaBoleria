@@ -18,18 +18,53 @@ export async function postOrder(order) {
 
 export async function getAllOrders() {
   return db.query(
-    `SELECT json_agg(clients) AS client, json_agg(cakes) AS cake, orders.id AS "orderId", "createdAt", quantity, "totalPrice" 
-    FROM orders JOIN clients ON orders."clientId" = clients.id 
-    JOIN cakes ON orders."cakeId" = cakes.id GROUP BY orders.id`
+    `SELECT json_build_object('id',clients.id,
+                              'name',clients.name,
+                              'address',clients.address,
+                              'phone',clients.phone) AS client, 
+     json_build_object('id',cakes.id,
+                      'price',cakes.price,
+                      'description',cakes.description,
+                      'image',cakes.image) AS cake, 
+     orders.id AS "orderId", "createdAt", quantity, "totalPrice" 
+     FROM orders JOIN clients ON orders."clientId" = clients.id 
+     JOIN cakes ON orders."cakeId" = cakes.id GROUP BY orders.id, clients.id, cakes.id
+     ORDER BY orders.id`
+  );
+}
+
+export async function getOrdersbyDate(date) {
+  return db.query(
+    `SELECT json_build_object('id',clients.id,
+                              'name',clients.name,
+                              'address',clients.address,
+                              'phone',clients.phone) AS client, 
+            json_build_object('id',cakes.id,
+                              'price',cakes.price,
+                              'description',cakes.description,
+                              'image',cakes.image) AS cake, 
+     orders.id AS "orderId", "createdAt", quantity, "totalPrice" 
+     FROM orders JOIN clients ON orders."clientId" = clients.id 
+     JOIN cakes ON orders."cakeId" = cakes.id WHERE orders."createdAt" = $1 
+     GROUP BY orders.id, clients.id, cakes.id ORDER BY orders.id `,
+    [date]
   );
 }
 
 export async function getOrder(id) {
   return db.query(
-    `SELECT json_agg(clients) AS client, json_agg(cakes) AS cake, orders.id AS "orderId", "createdAt", quantity, "totalPrice" 
-    FROM orders JOIN clients ON orders."clientId" = clients.id 
-    JOIN cakes ON orders."cakeId" = cakes.id WHERE orders.id = $1 
-    GROUP BY orders.id;`,
+    `SELECT json_build_object('id',clients.id,
+                              'name',clients.name,
+                              'address',clients.address,
+                              'phone',clients.phone) AS client, 
+            json_build_object('id',cakes.id,
+                              'price',cakes.price,
+                              'description',cakes.description,
+                              'image',cakes.image) AS cake, 
+     orders.id AS "orderId", "createdAt", quantity, "totalPrice" 
+     FROM orders JOIN clients ON orders."clientId" = clients.id 
+     JOIN cakes ON orders."cakeId" = cakes.id WHERE orders.id = $1 
+     GROUP BY orders.id, clients.id, cakes.id ORDER BY orders.id`,
     [id]
   );
 }

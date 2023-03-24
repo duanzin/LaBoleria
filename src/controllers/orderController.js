@@ -1,4 +1,12 @@
-import { getAllOrders, getCake, getClient, getClientOrder, getOrder, postOrder } from "../repositories/orderRepository.js";
+import {
+  getAllOrders,
+  getCake,
+  getClient,
+  getClientOrder,
+  getOrder,
+  getOrdersbyDate,
+  postOrder,
+} from "../repositories/orderRepository.js";
 
 export async function createOrder(req, res) {
   try {
@@ -17,12 +25,20 @@ export async function createOrder(req, res) {
 
 export async function getOrders(req, res) {
   try {
-    const orders = await getAllOrders();
+    if (!req.params.date) {
+      const orders = await getAllOrders();
+      if (orders.rows.length == 0) {
+        return res.sendStatus(404);
+      }
+
+      return res.status(200).send(orders);
+    }
+    const orders = await getOrdersbyDate(req.params.date);
     if (orders.rows.length == 0) {
       return res.sendStatus(404);
     }
 
-    res.status(200).send(orders);
+    return res.status(200).send(orders);
   } catch (err) {
     res.status(500).send(err.message);
   }
